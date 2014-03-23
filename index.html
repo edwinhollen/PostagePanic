@@ -2,18 +2,74 @@
 <html lang="en">
 <head>
 	<title>Capitals</title>
+	<style type="text/css">
+	body{
+		background: url('assets/pagebgheader.png') repeat-x, url('assets/pagebgmain.png') repeat;
+		font-family: 'Georgia', serif;
+
+	}
+	.container{
+		width: 720px;
+		margin: 0 auto;
+		display: block;
+	}
+	section{
+		background: white;
+		padding: 16px;
+	}
+	.button{
+		font-size: 1.5em;
+		display: inline-block;
+		padding: 16px 32px;
+		background: gray;
+		text-align: center;
+		font-weight: bold;
+	}
+	.button:hover{
+		cursor: pointer;
+	}
+	.button.accept{
+		background: hsl(85, 70%, 50%);
+	}
+	.button.deny{
+		background: hsl(0, 70%, 50%);
+	}
+	.buttons .deny{
+		float: right;
+	}
+	</style>
 	<script src="bower_components/chance/chance.js"></script>
 </head>
 <body>
-	<canvas id="gameCanvas">
-		<p>Oops, looks like your browser doesn't support HTML5 canvas.</p>
-	</canvas>
+	<div class="container">
+		<canvas id="gameCanvas">
+			<p>Oops, looks like your browser doesn't support HTML5 canvas.</p>
+		</canvas>
+		<div class="buttons">
+			<div id="btn_accept" class="button accept">Accept parcel <code>[Z]</code></div>
+			<div id="btn_deny" class="button deny">Deny parcel <code>[/]</code></div>
+		</div>
+		<br />
+		<section>
+			<h1>Postage Panic</h1>
+			<p><em>For modern browsers only.</em></p>
+			<h2>How to play</h2>
+			<p>Observe the parcel's destination city and state. Accept correct parcels; deny incorrect parcels.</p>
+			<h2>Description</h2>
+			<p>Improve your knowledge of U.S. state capitals with this tiny game written in Javascript for the HTML5 canvas! Also uses the <a href="https://github.com/victorquinn/chancejs">ChanceJS</a> library.</p>
+			<h2>Under the hood</h2>
+			<ul>
+				<li>Silky smooth 60FPS thanks to <em>modern browsers</em> and their respective implementation of the <a href="https://developer.mozilla.org/en-US/docs/Web/API/window.requestAnimationFrame">requestAnimationFrame API</a>.</li>
+				<li>Some browsers may render a blurry representation of the game; this is due to a lack of native support for the <code>imageSmoothingEnabled</code> canvas context property.</li>
+				<li>Open the developer console for cheats mode.</li>
+			</ul>
+		</section>
+	</div>
 
 	<script src="js/util.js"></script>
 	<script src="js/main.js"></script>
 	<script>
-		Game.init(document.querySelector('#gameCanvas'));
-		Game.loop();
+		Game.init($('#gameCanvas'));
 	</script>
 </body>
 </html>

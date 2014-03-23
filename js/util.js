@@ -1,3 +1,7 @@
+var $ = function(e){
+	return document.querySelector(e);
+};
+
 var fetch = function(url, callback){
 	var req = new XMLHttpRequest();
 	req.open('GET', url, true);

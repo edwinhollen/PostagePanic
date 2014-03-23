@@ -28,6 +28,8 @@ var Parcel = function(){
 	this.image = 'cardboardbox';
 	this.isCorrect = chance.bool();
 	this.isDisplayAbbr = chance.bool();
+	this.moveSpeed = 0.9;
+	this.answered = false;
 
 	this.destination = null;
 
@@ -68,14 +70,10 @@ Game.assets = {
 		},
 		sounds: {}
 	},
-	imageOnload: function(){
-		console.log('Loaded', this.src);
-	},
 	loadImages: function(images, callback){
 		for(var name in images){
 			var url = images[name];
 			this.loaded.images[name] = new Image();
-			this.loaded.images[name].onload = this.imageOnload;
 			this.loaded.images[name].src = url;
 		}
 		callback();
@@ -85,7 +83,35 @@ Game.assets = {
 	}
 };
 
+Game.newParcel = function(){
+	this.currentParcel = new Parcel();
+	console.log('Generated new parcel at', new Date().getTime());
+	console.log(this.currentParcel);
+};
+
+Game.acceptParcel = function(){
+	if(this.currentParcel.isCorrect){
+		this.stats.correct++;
+	}else{
+		this.stats.incorrect++;
+	}
+	this.currentParcel.answered = true;
+	this.currentParcel.moveSpeed *= 8;
+};
+
+Game.denyParcel = function(){
+	if(this.currentParcel.isCorrect){
+		this.stats.incorrect++;
+	}else{
+		this.stats.correct++;
+	}
+	this.currentParcel.answered = true;
+	this.currentParcel.moveSpeed *= 8;
+};
+
 Game.init = function(c) {
+	console.log('Initializing game...');
+	console.log('Preparing the canvas');
 	this.canvas = c;
 	this.canvas.width = 720;
 	this.canvas.height = 480;
@@ -94,7 +120,29 @@ Game.init = function(c) {
 	this.ctx.imageSmoothingEnabled = false;
 	this.ctx.scale(this.scale, this.scale);
 
+	console.log('Adding event listeners');
+	$('#btn_accept').addEventListener('click', function(){
+		this.acceptParcel();
+	}.bind(this));
+	$('#btn_deny').addEventListener('click', function(){
+		this.denyParcel();
+	}.bind(this));
+	$('body').addEventListener('keypress', function(e){
+		var key = String.fromCharCode(e.which).toLowerCase();
+		switch(key){
+			case 'z':
+				this.acceptParcel();
+				break;
+			case '/':
+				this.denyParcel();
+				break;
+			default: 
+				break;
+		}
+	}.bind(this));
+
 	// load assets
+	console.log('Loading assets');
 	this.assets.loadImages({
 		'background_blue': 'assets/background.png',
 		'cardboardbox': 'assets/cardboardbox.png',
@@ -103,11 +151,10 @@ Game.init = function(c) {
 		'scanner': 'assets/scanner.png',
 		'laserglow': 'assets/laserglow.png'
 	}, function(){
-		console.log('Done loading images');
 		fetch('assets/us_states.json', function(r){
 			this.assets.loaded.data.us_states = JSON.parse(r);
-			this.currentParcel = new Parcel();
-			console.log(this.currentParcel);
+			this.newParcel();
+			this.loop();
 		}.bind(this));
 	}.bind(this));
 };
@@ -115,10 +162,12 @@ Game.init = function(c) {
 Game.update = function(canvas){
 	if(this.currentParcel){
 		if(this.currentParcel.x <= canvas.width / this.scale){
-			this.currentParcel.x += 0.75;
+			this.currentParcel.x += this.currentParcel.moveSpeed;
 		}else{
-			this.currentParcel = new Parcel();
-			this.stats.incorrect += 1;
+			if(!this.currentParcel.answered){
+				this.stats.incorrect += 1;
+			}
+			this.newParcel();
 		}
 	}
 };
@@ -170,6 +219,11 @@ Game.render = function(canvas, ctx){
 		// on parcel
 		ctx.drawImage(img_laserglow, this.currentParcel.x+4, this.currentParcel.y-3);
 	}
+
+	// correct or incorrect
+	ctx.fillStyle = 'white';
+	ctx.textAlign = 'left';
+	ctx.wrapText('Correct: {0}\nIncorrect: {1}'.format(this.stats.correct, this.stats.incorrect), 10, 10, 96, 12);
 
 	
 };
