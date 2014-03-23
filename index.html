@@ -2,12 +2,14 @@
 <html lang="en">
 <head>
 	<title>Capitals</title>
+	<script src="bower_components/chance/chance.js"></script>
 </head>
 <body>
 	<canvas id="gameCanvas">
 		<p>Oops, looks like your browser doesn't support HTML5 canvas.</p>
 	</canvas>
 
+	<script src="js/util.js"></script>
 	<script src="js/main.js"></script>
 	<script>
 		Game.init(document.querySelector('#gameCanvas'));
