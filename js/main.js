@@ -1,5 +1,11 @@
 (function(){"use strict";})();
 
+// TODO
+// - Put the image assets into a spritesheet
+// - Add sound
+// - Add timer
+// - Add backend and leaderboard
+
 var Destination = function(n, a, c){
 	this.name = null;
 	this.abbreviation = null;
